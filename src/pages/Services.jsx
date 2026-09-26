@@ -96,14 +96,19 @@ export default function Services() {
 function AppointmentForm() {
   const { user } = useAuth()
 
-  // Limit bookable dates to the current week (doctor availability window)
+  // Limit bookable dates to the current week (doctor availability window) starting from today
+  const toLocalDateStr = (d) => {
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
   const today = new Date()
   const dayOfWeek = today.getDay() // 0 = Sunday
   const endOfWeek = new Date(today)
   endOfWeek.setDate(today.getDate() + (6 - dayOfWeek))
-  const toISODate = (d) => d.toISOString().split('T')[0]
-  const minDate = toISODate(today)
-  const maxDate = toISODate(endOfWeek)
+  const minDate = toLocalDateStr(today)
+  const maxDate = toLocalDateStr(endOfWeek)
 
   function handleSubmit(e) {
     e.preventDefault()

@@ -46,11 +46,25 @@ export default function UserDashboard() {
       c.guardian.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Format today's date in local time YYYY-MM-DD
+  const todayStr = (() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  })();
+
   // Handle Child Registration
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
     if (!registerForm.name || !registerForm.dob || !registerForm.guardian) {
       alert('Please fill out all required fields.');
+      return;
+    }
+
+    if (registerForm.dob > todayStr) {
+      alert('Date of birth cannot be in the future. Please select today or an earlier date.');
       return;
     }
 
@@ -74,6 +88,11 @@ export default function UserDashboard() {
     e.preventDefault();
     if (!bookForm.childId || !bookForm.date) {
       alert('Please select a child and preferred appointment date.');
+      return;
+    }
+
+    if (bookForm.date < todayStr) {
+      alert('Appointment date cannot be in the past. Please select today or a future date.');
       return;
     }
 
@@ -361,6 +380,7 @@ export default function UserDashboard() {
                   <input
                     type="date"
                     value={registerForm.dob}
+                    max={todayStr}
                     onChange={(e) => setRegisterForm({ ...registerForm, dob: e.target.value })}
                     required
                   />
@@ -474,6 +494,7 @@ export default function UserDashboard() {
                     <input
                       type="date"
                       value={bookForm.date}
+                      min={todayStr}
                       onChange={(e) => setBookForm({ ...bookForm, date: e.target.value })}
                       required
                     />

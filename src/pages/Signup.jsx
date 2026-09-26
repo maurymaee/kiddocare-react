@@ -22,6 +22,14 @@ export default function Signup() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
+  const todayStr = (() => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  })()
+
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
   }
@@ -55,7 +63,14 @@ export default function Signup() {
             <p className="auth-sub">Register to manage your child's health records</p>
             <p className="step-label">Step 1 of 3</p>
             <StepBar upTo={1} />
-            <form onSubmit={(e) => { e.preventDefault(); setStep(2) }}>
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              if (form.dob > todayStr) {
+                alert('Date of birth cannot be in the future. Please select today or an earlier date.')
+                return
+              }
+              setStep(2)
+            }}>
               <div className="form-group">
                 <label>Guardian's Name:</label>
                 <input type="text" placeholder="Juan Dela Cruz" required
@@ -68,7 +83,7 @@ export default function Signup() {
               </div>
               <div className="form-group">
                 <label>Patient's Date of Birth:</label>
-                <input type="date" required
+                <input type="date" required max={todayStr}
                   value={form.dob} onChange={(e) => update('dob', e.target.value)} />
               </div>
               <div className="gender-group">
